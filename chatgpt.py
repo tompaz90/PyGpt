@@ -1,4 +1,3 @@
-import os
 from openai import OpenAI
 import typer
 from rich import print
@@ -6,54 +5,53 @@ from rich.table import Table
 
 
 def main():
-    # Leemos el token personal en un fichero passkey.txt
+    # Read the token from the file passkey.txt and give it to chatgpt
     with open("passkey.txt", "r") as file:
         passkey = file.read()
         file.close()
+        client = OpenAI(
+            api_key=passkey
+        )
 
-    # Le damos la clave personal a chatgpt
-    client = OpenAI(
-        api_key=passkey
-    )
-
-    # Creamos una tabla mostrando las diferentes funciones
-    print("[bold green]Asistente con ChatGPT[/bold green]")
-    table = Table("Comando", "Descripción")
-    table.add_row("exit", "Salir de la app")
-    table.add_row("new", "Crear nueva conversación")
+    # Create a table showing different functions
+    print("[bold green]ChatGPT Assistant[/bold green]")
+    table = Table("Command", "Description")
+    table.add_row("exit", "Kill the app")
+    table.add_row("new", "Start new chat")
     print(table)
 
-    # Si quieres usar chatgpt en un ambito concreto este seria el lugar para colocar el contexto
+    # Content gives a first context to chatgpt
     context = [{"role": "system",
-                "content": "Eres un asistente de programacion"}]
+                "content": "You are a assistant of programming"}]
     messages = context
 
     while True:
         prompt = _prompt()
 
-        # Si el prompt es "new" se borra toda la conversacion y se crea una nueva
+        # If prompt is "new" deletes all messages and starts a new conversation
         if prompt == "new":
-            print("[green]Nueva conversación creada[/green]")
+            print("[green]New conversation created[/green]")
             messages = context
             prompt = _prompt()
 
-        # en messages role y content son los 2 parametros obligatorios
+        # In messages "Role" and "Content" are mandatory
         messages.append({"role": "user", "content": prompt})
 
+        # Generates a response from chatgpt
         response = client.chat.completions.create(model="gpt-3.5-turbo",
                                                   messages=messages)
 
         response_txt = response.choices[0].message.content
 
-        # Guardamos la respuesta en la conversacion para seguir interactuando
+        # Saves response and keeps talking
         messages.append({"role": "assistant", "content": response_txt})
         print(f'[bold green]{response_txt}[/bold green]')
 
 
 def _prompt() -> str:
-    prompt = typer.prompt("Lanza tu pregunta")
+    prompt = typer.prompt("Ask your question")
     if prompt == "exit":
-        _exit = typer.confirm("¿Estás seguro?")
+        _exit = typer.confirm("¿Are you sure?")
         if _exit:
             raise typer.Abort()
     return prompt
