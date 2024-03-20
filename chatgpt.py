@@ -5,16 +5,16 @@ from rich.table import Table
 
 
 def main():
+    _option()
+
+
+def _option() -> None:
     # Create a table showing different functions
     print("[bold green]ChatGPT Assistant[/bold green]")
     table = Table("Command", "Description")
     table.add_row("exit", "Kill the app")
     table.add_row("chat", "Start new chat")
     print(table)
-    _option()
-
-
-def _option() -> None:
     option = typer.prompt("Choose option")
     if option == "exit":
         _exit()
@@ -42,12 +42,15 @@ def _prompt():
     messages = context
 
     while True:
+        print("[bold green]Write 'new' for a new chat[/bold green]")
         prompt = typer.prompt("Ask your question")
 
         # If prompt is "new" deletes all messages and starts a new conversation
         if prompt == "new":
             print("[green]New conversation created[/green]")
             _prompt()
+        elif prompt == "exit":
+            _exit()
         elif prompt == "option":
             _option()
 
