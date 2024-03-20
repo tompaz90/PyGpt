@@ -27,8 +27,9 @@ def _option() -> None:
     print("[bold green]ChatGPT Assistant[/bold green]")
     table = Table("Command", "Description")
     table.add_row("exit", "Kill the app")
+    table.add_row("option", "Choose another option")
     table.add_row("chat", "Starts new chat")
-    table.add_row("img", "Starts chat of images")
+    table.add_row("img", "Starts new images chat")
     print(table)
     option = typer.prompt("Choose option")
     if option == "exit":
@@ -37,6 +38,8 @@ def _option() -> None:
         _prompt()
     elif option == "img":
         _img()
+    else:
+        _option()
 
 
 def _exit() -> None:
